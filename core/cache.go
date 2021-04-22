@@ -59,3 +59,9 @@ func (c *cache) get(key string) (value ByteView, ok bool) {
 	return
 }
 
+func cloneBytes(b []byte) []byte {
+	newByte := make([]byte, len(b))
+	copy(newByte, b)
+	return newByte
+}
+
