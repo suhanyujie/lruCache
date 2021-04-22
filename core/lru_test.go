@@ -1,4 +1,4 @@
-package lru
+package core
 
 import (
 	"encoding/json"
