@@ -34,3 +34,30 @@ func (h *HttpGetter) Get(group string, key string) ([]byte, error) {
 }
 
 var _ PeerGetter = (*HttpGetter)(nil)
+
+/// 实现 PeerPicker
+
+func (p *HttpPool) Set(peers ...string)  {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.peers = NewMap(defaultReplicas, nil)
+	p.peers.Add(peers...)
+	p.httpGetters = make(map[string]*HttpGetter, len(peers))
+	for _, peer := range peers {
+		p.httpGetters[peer] = &HttpGetter{
+			baseUrl: peer + p.basePath,
+		}
+	}
+}
+
+func (p *HttpPool) PickPeer(key string) (PeerGetter, bool) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if peer := p.peers.Get(key); peer != "" && peer != p.self {
+		p.Log("Pick peer %s", peer)
+		return p.httpGetters[peer], true
+	}
+	return nil, false
+}
+
+var _ PeerPicker = (*HttpPool)(nil)

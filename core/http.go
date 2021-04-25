@@ -5,15 +5,20 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"sync"
 )
 
 const (
 	defaultBasePath = "/_lruCache/"
+	defaultReplicas = 50
 )
 
 type HttpPool struct {
 	self string
 	basePath string
+	mu sync.Mutex
+	peers *Map
+	httpGetters map[string]*HttpGetter
 }
 
 func NewHttpPool(self string) *HttpPool {
