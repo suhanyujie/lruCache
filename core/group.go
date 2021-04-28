@@ -70,7 +70,7 @@ func (g *Group) load(key string) (ByteView, error) {
 			if value, err := g.getFromPeer(peer, key); err == nil {
 				return value, nil
 			} else {
-				log.Println("[lruCache] Failed to get from peer", err)
+				log.Println("[lruCache] Failed to get from peer: ", err)
 			}
 		}
 	}
