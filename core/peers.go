@@ -7,5 +7,5 @@ type PeerPicker interface {
 
 type PeerGetter interface {
 	// 用于从节点（group）查找缓存值
-	Get(group string, key string) ([]byte, error)
+	Get(in *Request, out *Response) ([]byte, error)
 }

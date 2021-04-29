@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"github.com/golang/protobuf/proto"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -11,12 +12,12 @@ type HttpGetter struct {
 	baseUrl string
 }
 
-func (h *HttpGetter) Get(group string, key string) ([]byte, error) {
+func (h *HttpGetter) Get(in *Request, out *Response) ([]byte, error) {
 	apiUrl := fmt.Sprintf(
 		"%v%v/%v",
 		h.baseUrl,
-		url.QueryEscape(group),
-		url.QueryEscape(key),
+		url.QueryEscape(in.GetGroup()),
+		url.QueryEscape(in.GetKey()),
 		)
 	resp, err := http.Get(apiUrl)
 	if err != nil {
@@ -29,6 +30,9 @@ func (h *HttpGetter) Get(group string, key string) ([]byte, error) {
 	bytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("reading response body: %v", err)
+	}
+	if err = proto.Unmarshal(bytes, out); err != nil {
+		return bytes, fmt.Errorf("decoding response error: %v", err)
 	}
 	return bytes, nil
 }

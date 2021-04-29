@@ -86,7 +86,12 @@ func (g *Group) load(key string) (value ByteView, err error) {
 }
 
 func (g *Group) getFromPeer(peer PeerGetter, key string) (ByteView, error) {
-	bytes, err := peer.Get(g.name, key)
+	req := &Request{
+		Group:                g.name,
+		Key:                  key,
+	}
+	res := &Response{}
+	bytes, err := peer.Get(req, res)
 	if err != nil {
 		return ByteView{}, err
 	}
